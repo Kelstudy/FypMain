@@ -12,4 +12,5 @@ data/ESCO/
 .idea/
 .DS_Store
 Thumbs.db
-src/Play/
+/src/play_code
+Play/
