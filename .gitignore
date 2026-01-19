@@ -1,0 +1,13 @@
+api.env
+.env
+*.env
+!api_template.env
+venv/
+.venv/
+data/raw/
+data/processed/
+*.db
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
