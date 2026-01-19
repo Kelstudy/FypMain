@@ -6,8 +6,10 @@ venv/
 .venv/
 data/raw/
 data/processed/
+data/ESCO/
 *.db
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
+src/Play/
