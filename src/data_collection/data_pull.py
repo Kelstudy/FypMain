@@ -80,8 +80,14 @@ def callApiForKeywords(searchKeyword,targetCount,adzunaID,adzunaKey):
              print(f"No more results available for {searchKeyword}")
              break
         
+        filtered_jobs = []
+        for job in jobsOnCurrentPage:
+            # Check if the keyword actually exists in the title
+            if searchKeyword.lower() in job.get('title', '').lower():
+                filtered_jobs.append(job)
+
         # Add found jobs to list
-        allJobListings.extend(jobsOnCurrentPage)
+        allJobListings.extend(filtered_jobs)
 
         currentPageNumber +=1
 
