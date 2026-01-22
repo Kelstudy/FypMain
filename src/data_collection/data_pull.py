@@ -80,6 +80,7 @@ def callApiForKeywords(searchKeyword,targetCount,adzunaID,adzunaKey):
              print(f"No more results available for {searchKeyword}")
              break
         
+        #Filter jobs so dont get unrelated jobs due to adzunas fuzzy search
         filtered_jobs = []
         for job in jobsOnCurrentPage:
             # Check if the keyword actually exists in the title
