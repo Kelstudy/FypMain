@@ -4,6 +4,7 @@ api.env
 !api_template.env
 venv/
 .venv/
+
 *.db
 .vscode/
 .idea/
@@ -13,5 +14,5 @@ Thumbs.db
 /src/play_code
 play_data/
 docs/
-data/
-docs/meetings
+data/raw/
+data/ESCO/Unused_Extra/
