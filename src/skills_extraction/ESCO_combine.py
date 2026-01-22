@@ -44,6 +44,7 @@ def buildTechSkillLibrary():
 
     
     finalLibraryDF.to_parquet(outputFile, index=False)
+    print("file exported")
 
 
 buildTechSkillLibrary()
