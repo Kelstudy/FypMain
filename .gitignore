@@ -12,7 +12,6 @@ venv/
 Thumbs.db
 
 /src/play_code
-play_data/
 docs/
 data/raw/
 data/ESCO/Unused_Extra/

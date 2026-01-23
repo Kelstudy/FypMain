@@ -47,6 +47,25 @@ def main():
         processor = utils.default_process  # remove non-alphanumeric, trim whitespaces, convert to lower case
     )
 
+    bestEscoTitle = fuzzyMatchResult[0] # fuzzy match job title
+    score = fuzzyMatchResult[1] #the fuzzy match score
+    
+
+    #Get essential knowledge skills for the job titles
+    foundSkills = []
+    essentials = escoLibraryDF[
+        (escoLibraryDF["preferredLabel_job"]==bestEscoTitle)    #find every row in the parquet file where the job title matches the new fuzzy match job title
+        & (escoLibraryDF["relationType"]=="essential")] # only use skills marked as "essential" so no optional skills
+    ["preferredLabel_skill"].unique().tolist()  # get the essential unique skills only (no other info) and add to "essentials" list
+    
+    #add essentials skills to foundskills dictionary with the skill source 
+    for skill in essentials:
+        foundSkills.append({"skill": skill, "source": "ESCO Essential Skill"})
+
+
+
+   
+
 
 
     
