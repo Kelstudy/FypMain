@@ -1,5 +1,4 @@
 import pandas as pd
-import re
 from pathlib import Path
 from rapidfuzz import process,utils,fuzz
 
@@ -28,7 +27,7 @@ def main():
     print (f"Refining matches for {len(adzunaDF)} jobs...")
 
     #get job information
-    for i , row in adzunaDF.itterows():
+    for index , row in adzunaDF.iterrows():
         jobID = row.get("id","N/A")
         rawTitle = str(row["title"])
         roleGroup = str(row.get("search_keyword", "Unknown")).lower()
@@ -38,42 +37,47 @@ def main():
         salaryMin = float(row["salary_min"])
         salaryMax = float(row["salary_max"])
 
+        # Use FuzzySearch to find closest ESCO job title compared to Adzuna job title
+        fuzzyMatchResult = process.extractOne(
+            rawTitle,
+            escoTitles,
+            scorer = fuzz.WRatio, # WRatio chosen as found best for general purpose
+            processor = utils.default_process  # remove non-alphanumeric, trim whitespaces, convert to lower case
+        )
 
-    # Use FuzzySearch to find closest ESCO job title compared to Adzuna job title
-    fuzzyMatchResult = process.extractOne(
-        rawTitle,
-        escoTitles,
-        scorer = fuzz.WRatio, # WRatio chosen as found best for general purpose
-        processor = utils.default_process  # remove non-alphanumeric, trim whitespaces, convert to lower case
-    )
+        bestEscoTitle = fuzzyMatchResult[0] # fuzzy match job title
+        score = fuzzyMatchResult[1] #the fuzzy match score
 
-    bestEscoTitle = fuzzyMatchResult[0] # fuzzy match job title
-    score = fuzzyMatchResult[1] #the fuzzy match score
+        #Get essential knowledge skills for the job titles
+        foundSkills = []
+
+        #Find every row in the parquet file where the job title matches the new fuzzy match job title
+        # only use skills marked as "essential" so no optional skills
+        # get the essential unique skills only (no other info) and add to "essentials" list
+        essentials = escoLibraryDF[   
+            (escoLibraryDF["preferredLabel_job"]==bestEscoTitle) & (escoLibraryDF["relationType"]=="essential") 
+        ]["preferredLabel_skill"].unique().tolist()  
     
+        #add essentials skills to foundskills dictionary with the skill source for current job title iteration
+        for skill in essentials:
+            foundSkills.append({"skill": skill, "source": "ESCO Essential Skill"})
 
-    #Get essential knowledge skills for the job titles
-    foundSkills = []
-    essentials = escoLibraryDF[
-        (escoLibraryDF["preferredLabel_job"]==bestEscoTitle)    #find every row in the parquet file where the job title matches the new fuzzy match job title
-        & (escoLibraryDF["relationType"]=="essential")] # only use skills marked as "essential" so no optional skills
-    ["preferredLabel_skill"].unique().tolist()  # get the essential unique skills only (no other info) and add to "essentials" list
-    
-    #add essentials skills to foundskills dictionary with the skill source 
-    for skill in essentials:
-        foundSkills.append({"skill": skill, "source": "ESCO Essential Skill"})
+        # Append results
+        for item in foundSkills[:10]:
+            results.append({
+                "job_id": jobID,
+                "adzuna_title": rawTitle,
+                "esco_matched_title": bestEscoTitle,
+                "confidence score": score,
+                "skill": item['skill'],
+                "source": item['source'],
+                "role_group": roleGroup
+            })
 
+    output_df = pd.DataFrame(results)
+    output_df.to_excel(fileOut, index=False)
+    print(f"✅ Cleaned output saved to {fileOut}")
+    print(commonSkills)
 
-
-   
-
-
-
-    
-
-
-        
-
-
-
-
-    
+if __name__ == "__main__":
+    main()
