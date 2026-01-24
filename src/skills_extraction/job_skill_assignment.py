@@ -71,13 +71,16 @@ def main():
                 "confidence score": score,
                 "skill": item['skill'],
                 "source": item['source'],
-                "role_group": roleGroup
+                "role_group": roleGroup,
+                "contract_type":contractType,
+                "salary_min":salaryMin,
+                "salary_max":salaryMax,
+                "description":description,
+                "posting_url":postingUrl
             })
 
     output_df = pd.DataFrame(results)
     output_df.to_excel(fileOut, index=False)
-    print(f"✅ Cleaned output saved to {fileOut}")
-    print(commonSkills)
+    print(f"Cleaned output saved to {fileOut}")
 
-if __name__ == "__main__":
-    main()
+main()
