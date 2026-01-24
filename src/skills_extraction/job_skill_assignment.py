@@ -16,8 +16,6 @@ def main():
     adzunaDF = pd.read_excel(fileIn)
     escoLibraryDF = pd.read_parquet(escoLibraryIn)
 
-    #get top 500 most common skills of all jobs for later skill extraction from job descriptions
-    commonSkills = escoLibraryDF["preferredLabel_skill"].value_counts().head(500).index.tolist()
     # get unique job titles for later use
     escoTitles = escoLibraryDF["preferredLabel_job"].unique()
 
