@@ -1,3 +1,9 @@
+
+
+#### Is fuzzy search wrong for this , is there a better method as currently does not always return a good adzuna to esco job title match
+# Can we use transformers?
+
+
 import pandas as pd
 from pathlib import Path
 from rapidfuzz import process,utils,fuzz

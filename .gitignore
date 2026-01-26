@@ -11,7 +11,7 @@ venv/
 .DS_Store
 Thumbs.db
 
-/src/play_code
+
 docs/
-data/raw/
+data/raw/adzuna_raw.xlsx
 data/ESCO/Unused_Extra/
