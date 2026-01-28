@@ -198,9 +198,14 @@ def main():
 
     
      #Save to Excel
+     
      outputFilePath = Path("data/raw/adzuna_raw.xlsx")
+     # create parent folders if they don't exist
+     outputFilePath.parent.mkdir(parents=True, exist_ok=True)
+
      with pd.ExcelWriter(outputFilePath, engine="openpyxl") as excelWriter:
         combinedDataFrame.to_excel(excelWriter, sheet_name="Jobs_Raw", index=False)
 
 
 main()
+ 
