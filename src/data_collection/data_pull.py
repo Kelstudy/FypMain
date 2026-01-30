@@ -199,7 +199,7 @@ def main():
     
      #Save to Excel
      
-     outputFilePath = Path("data/raw/adzuna_raw.xlsx")
+     outputFilePath = Path(__file__).parents[2]/"data/raw/adzuna_raw.xlsx"
      # create parent folders if they don't exist
      outputFilePath.parent.mkdir(parents=True, exist_ok=True)
 
