@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 def loadApiCredentials():   #Setup API key and ID
-    envPath = Path(__file__).parents[2]/"api.env"
+    envPath = Path(__file__).parents[2]/"api_template.env"
     #load api.env file 
     load_dotenv(envPath)
 
