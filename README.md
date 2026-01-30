@@ -116,18 +116,9 @@ Script: job_skill_assignment.py
 pip install -r requirements.txt
 
 ### Configure API credentials 
->NOTE!
-> (Final version of this project will not require envPath variable change from the user)
 
 1. Edit api_template.env to include your API credentials for Adzuna
 
-2. In data_pull.py () :
-
-change envPath = Path(__file__).parents[2]/"api.env" 
-
-to
-
-envPath = Path(__file__).parents[2]/"api_template.env"
 
 ## Execution Order
 Run scripts in the following order:
