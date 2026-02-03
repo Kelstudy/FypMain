@@ -92,7 +92,7 @@ Script: ESCO_combine.py
 ### Job Title Matching and Skill Assignment
 Script: job_skill_assignment.py
 
-- Fuzzy-matches Adzuna job titles to ESCO occupations
+- Fuzzy matches Adzuna job titles to ESCO occupations
 - Assigns essential ESCO skills to each job posting
 - Outputs job_skills_extracted.xlsx linking job titles, skills, salary ranges, locations, and match confidence scores
 
