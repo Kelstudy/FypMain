@@ -16,6 +16,16 @@ This improves reliability, scalability, and defensibility.
 
 The final outcome will be an interactive dashboard allowing users to explore trends across roles, skill demand, locations, and salaries within the UK job market.
 
+--- 
+
+## Challenges
+
+This project faced several technical challenges, mainly related to data quality and the reliable extraction of job skills from live job postings. Job descriptions retrieved via the Adzuna API were truncated and lacked skill information, making direct skill extraction from text unreliable. 
+
+To mitigate this, the project inferred skills indirectly by mapping Adzuna job titles to standardised ESCO occupations and assigning skills to the Adzuna job title, based on the ESCO taxonomy, improving consistency and scalability.
+
+Fuzzy matching between Adzuna job titles and ESCO occupations sometimes introduced innacurate matches, highlighting the need for iterative refinement and justifying the use of the CRISP DM methodology.
+
 ---
 
 ## Key Features
@@ -130,6 +140,7 @@ Run scripts in the following order:
 Each script is rerunnable and designed to overwrite outdated outputs.
 
 
+
 ## Current Status
 
 - Live data pipeline implemented
@@ -139,3 +150,6 @@ Each script is rerunnable and designed to overwrite outdated outputs.
 - Final analysis and report pending
 
 ---
+
+
+
