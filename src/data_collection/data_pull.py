@@ -117,13 +117,17 @@ def cleanDataFrame(rawDataFrame):
      cleanedData = rawDataFrame.drop(columns=columnsToRemove, errors="ignore")
      return cleanedData
 
-def main():
+def main(streamlitKeywords=None, streamlitCount=None):
      
      #Get API credentials
      adzunaApplicationID , adzunaApplicationKey = loadApiCredentials()
+   
+    #Determine if keywords provided via streamlit app or running manually
+     if streamlitKeywords:
+          userKeyWords = streamlitKeywords
+     else:
+          userKeyWords = input("Enter keywords for job titles (separated by commas): ").strip()
 
-     userKeyWords = input("Enter keywords for job titles (separated by commas): ").strip()
-    
     # split keywords by commas and add to a list
      rawKeywords = userKeyWords.split(",")
      searchKeywordList = []
@@ -136,36 +140,39 @@ def main():
      if len(searchKeywordList) == 0:
           raise ValueError("You must enter at least one keyword")
      
-     # ask for how many results per keyword
-     userCountInput = input("Results per keyword (Min: 50). Enter one number OR comma to seperate multiple numbers: ").strip()
-        
-    #If multiple target records then split each one 
-     if "," in userCountInput:
-        rawCounts = userCountInput.split(",")
-        targetCountList = []
-        for count in rawCounts:
-            cleanedCount = count.strip()
-            if cleanedCount != "" :
-                targetCountList.append(cleanedCount)
-        
-        if len(targetCountList) != len(searchKeywordList):
-                raise ValueError("Number of counts must match the number of entered keywords")
-        
-        #convert list of strings in strCountList into ints
-        intCountList = []
-        for str in targetCountList:
-             convertInt = int(str)
-             intCountList.append(convertInt)
-
-        #update original list with the ints
-        targetCountList = intCountList
-
-    #If no commas , and only 1 number entered for counts then create a list of just that number
+     if streamlitCount:
+          targetCountList = [int(streamlitCount) for keyword in searchKeywordList]
      else:
-        singleNumber = int(userCountInput)
-        targetCountList = []
-        for keyword in searchKeywordList:
-             targetCountList.append(singleNumber)
+        # ask for how many results per keyword
+        userCountInput = input("Results per keyword (Min: 50). Enter one number OR comma to seperate multiple numbers: ").strip()
+            
+        #If multiple target records then split each one 
+        if "," in userCountInput:
+            rawCounts = userCountInput.split(",")
+            targetCountList = []
+            for count in rawCounts:
+                cleanedCount = count.strip()
+                if cleanedCount != "" :
+                    targetCountList.append(cleanedCount)
+        
+            if len(targetCountList) != len(searchKeywordList):
+                    raise ValueError("Number of counts must match the number of entered keywords")
+            
+            #convert list of strings in strCountList into ints
+            intCountList = []
+            for str in targetCountList:
+                convertInt = int(str)
+                intCountList.append(convertInt)
+
+            #update original list with the ints
+            targetCountList = intCountList
+
+        #If no commas , and only 1 number entered for counts then create a list of just that number
+        else:
+            singleNumber = int(userCountInput)
+            targetCountList = []
+            for keyword in searchKeywordList:
+                targetCountList.append(singleNumber)
 
 
      #Get jobs for each keyword
