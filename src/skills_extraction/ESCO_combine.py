@@ -46,5 +46,6 @@ def buildTechSkillLibrary():
     finalLibraryDF.to_parquet(outputFile, index=False)
     print("file exported")
 
-
-buildTechSkillLibrary()
+# Only run if called , not when this script imported into another file
+if __name__ == "buildTechSkillLibrary":
+    buildTechSkillLibrary()

@@ -206,6 +206,7 @@ def main():
      with pd.ExcelWriter(outputFilePath, engine="openpyxl") as excelWriter:
         combinedDataFrame.to_excel(excelWriter, sheet_name="Jobs_Raw", index=False)
 
-
-main()
+# Only run if called , not when this script imported into another file
+if __name__ == "__main__":
+    main()
  
