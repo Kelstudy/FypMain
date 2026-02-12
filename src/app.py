@@ -14,6 +14,8 @@ root = Path(__file__).resolve().parents[1]  # FypMain/
 sys.path.insert(0, str(root))
 
 #Import data pipeline functions
-from data_pipeline.data_pull import main as adzunaPull
-from data_pipeline.ESCO_combine import buildTechSkillLibrary
-from data_pipeline.job_skill_assignment import main as assignSkills
+from src.data_pipeline.data_pull import main as adzunaPull
+from src.data_pipeline.ESCO_combine import buildTechSkillLibrary
+from src.data_pipeline.job_skill_assignment import main as assignSkills
+
+
