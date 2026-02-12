@@ -40,6 +40,8 @@ def main():
         postingUrl = str(row["redirect_url"])
         salaryMin = float(row["salary_min"])
         salaryMax = float(row["salary_max"])
+        latitude = float(row["latitude"])
+        longitude = float(row["longitude"])
 
         # Use FuzzySearch to find closest ESCO job title compared to Adzuna job title
         fuzzyMatchResult = process.extractOne(
@@ -80,7 +82,9 @@ def main():
                 "salary_min":salaryMin,
                 "salary_max":salaryMax,
                 "description":description,
-                "posting_url":postingUrl
+                "posting_url":postingUrl,
+                "latitude" : latitude ,
+                "longitude" : longitude
             })
 
     output_df = pd.DataFrame(results)
