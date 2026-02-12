@@ -17,3 +17,6 @@ data/raw/adzuna_raw.xlsx
 data/ESCO/Unused_Extra/
 src/skills_extraction/test.py
 Test_Code/
+
+__pycache__/
+*.pyc

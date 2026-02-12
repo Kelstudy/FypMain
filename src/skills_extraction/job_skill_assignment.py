@@ -87,4 +87,7 @@ def main():
     output_df.to_excel(fileOut, index=False)
     print(f"Cleaned output saved to {fileOut}")
 
-main()
+# Only run if called , not when this script imported into another file
+if __name__ == "__main__":
+    main()
+ 
