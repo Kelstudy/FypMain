@@ -6,7 +6,6 @@ import streamlit as st
 
 
 def loadApiCredentials():   #Setup API key and ID
-    
 
     try:
         apiId = st.secrets["ADZUNA_APP_ID"]
@@ -19,9 +18,11 @@ def loadApiCredentials():   #Setup API key and ID
         load_dotenv(envPath)
         load_dotenv("api.env")
         apiId = os.getenv("ADZUNA_APP_ID")
-        apiKey = os.getenv("ADZUNA_API_KEY")
+        apiKey = os.getenv("ADZUNA_APP_KEY")
 
     # API ID and key Error check
+    print(f"apiId: {apiId}")
+    print(f"apiKey: {apiKey}")
     if not apiId or not apiKey:
         raise ValueError(f"Missing Adzuna API information , check {envPath}")
     
