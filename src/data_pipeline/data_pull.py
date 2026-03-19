@@ -3,6 +3,7 @@ import requests
 import pandas as pd
 from dotenv import load_dotenv
 from pathlib import Path
+import streamlit as st
 
 
 def loadApiCredentials():   #Setup API key and ID
@@ -10,9 +11,15 @@ def loadApiCredentials():   #Setup API key and ID
     #load api.env file 
     load_dotenv(envPath)
 
-
-    apiId = os.getenv("ADZUNA_APP_ID")
-    apiKey = os.getenv("ADZUNA_APP_KEY")
+    try:
+        apiId = st.secrets["ADZUNA_APP_ID"]
+        apiKey = st.secrets["ADZUNA_API_KEY"]
+    except:
+        from dotenv import load_dotenv
+        import os
+        load_dotenv("api.env")
+        apiId = os.getenv("ADZUNA_APP_ID")
+        apiKey = os.getenv("ADZUNA_API_KEY")
 
     # API ID and key Error check
     if not apiId or not apiKey:

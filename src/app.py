@@ -46,7 +46,7 @@ with st.sidebar:
     runPipelineButton = st.button("Run Full Pipeline",type="primary") # primary type sets button type to highlighted
     resetDataButton = st.button ("Reset/Clear Data")
 
-    #Clear data when clear button clicked
+    #Clear data when "clear" button clicked
     if resetDataButton:
         #define location of files to delete
         processedFile = rootPath / "data" / "processed" / "job_skills_extracted.xlsx"
