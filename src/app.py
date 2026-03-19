@@ -25,3 +25,5 @@ def ensureEscoLibraryExists():
         print("Setup: Building ESCO library for the first time...")
         buildTechSkillLibrary()
     return True
+
+#test
