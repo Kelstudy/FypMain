@@ -125,6 +125,23 @@ def cleanDataFrame(rawDataFrame):
      cleanedData = rawDataFrame.drop(columns=columnsToRemove, errors="ignore")
      return cleanedData
 
+#Check collected data for missing values, salary anomolies and data types
+def DataQualityChecks(dataFrame):
+    
+    #empty array to add quality check warnings to later
+    qualityWarnings = []
+
+    totalJobs = len(dataFrame)
+
+    #Missing value checks
+    missingValueColumns = ["title", "salary_min", "salary_max", "latitude", "longitude", "contract_type"]
+    for column in missingValueColumns:
+        if column in dataFrame.columns:
+            missingCount = dataFrame[column].isna().sum()
+            if missingCount > 0:
+                qualityWarnings.append(f"Missing Values : '{column}' is missing in {missingCount} out of {totalJobs} job postings")
+
+
 def main(streamlitKeywords=None, streamlitCount=None):
      
      #Get API credentials
