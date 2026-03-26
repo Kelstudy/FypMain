@@ -17,7 +17,7 @@ fileOut = BaseDir / "data" / "processed" / "job_skills_extracted.xlsx"
 # Seniority and generic words to strip before fuzzy matching 
 SeniorityLevel = [
     "head of", "head","principal", "senior", "junior", "lead", "staff",
-    "associate", "assistant", "graduate", "entry level", "mid level", "admin","administrator"
+    "associate", "assistant", "graduate", "entry level", "mid level", "admin","administrator","manager"
 ]
 
 def stripSeniority(title):
