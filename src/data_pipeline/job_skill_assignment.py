@@ -14,7 +14,7 @@ fileIn = BaseDir / "data" / "raw" / "adzuna_raw.xlsx"
 escoLibraryIn = BaseDir / "data" /"processed"/ "job_skills_library.parquet"
 fileOut = BaseDir / "data" / "processed" / "job_skills_extracted.xlsx"
 
-# Seniority words to strip before fuzzy matching 
+# Seniority and generic words to strip before fuzzy matching 
 SeniorityLevel = [
     "head of", "head","principal", "senior", "junior", "lead", "staff",
     "associate", "assistant", "graduate", "entry level", "mid level", "admin","administrator"

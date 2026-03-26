@@ -68,9 +68,10 @@ if runPipelineButton:
             st.write("Step 1: Fetching Live Job Posting Data...")
             qualityWarnings = adzunaPull(jobTitleInput,recordLimit)
             st.write("Step 2: Matching jobs postings to skill sets")
+            assignSkills()
             #update status label
             status.update(label="Search Complete",state="complete")
-
+            
              # Display any warnings outside the status box, before the tabs
         if qualityWarnings:
             with st.expander(f"DATA QUALITY WARNINGS ({len(qualityWarnings)}):",expanded=True):
@@ -98,8 +99,8 @@ if processedFile.exists():
         st.warning("The search returned results but they couldn't be matched to any skills. Try a more common job title")
     
     else:
-        #create 3 tabs for each section
-        tabMap,tabList,tabSkills = st.tabs(["Map","Job List", "Skill Breakdown"])
+        #create 4 tabs, 1 for each section
+        tabMap,tabList,tabSkills,tabEDA = st.tabs(["Map","Job List", "Skill Breakdown","Exploratory Data Analysis"])
 
         #create map tab contents
         with tabMap:
@@ -194,6 +195,17 @@ if processedFile.exists():
                     for skill in skillColumn:
                         st.markdown(f"- {skill}")
 
+
+        #Create EDA tab contents
+        with tabEDA:
+           
+
+            #top 5 skills as metric cards
+            st.markdown("#### Top 5 Most Common Skills")
+            skillCounts = jobData["skill"].value_counts()
+            top5Skills = skillCounts.head(5)
+            for i,(skill,count) in enumerate(top5Skills.items()):
+                st.markdown(f"{skill} - **{count}** jobs")
 else:
     st.divider()
     st.info("Welcome! To begin, enter a job role in the sidebar and click **Run Full Pipeline**.")
