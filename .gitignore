@@ -15,6 +15,8 @@ Thumbs.db
 docs/
 data/raw/adzuna_raw.xlsx
 data/ESCO/Unused_Extra/
+data/processed/job_skills_extracted.xlsx
+data/raw/adzuna_raw.xlsx
 src/skills_extraction/test.py
 Test_Code/
 
