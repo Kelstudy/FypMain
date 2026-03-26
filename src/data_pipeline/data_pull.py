@@ -141,6 +141,36 @@ def DataQualityChecks(dataFrame):
             if missingCount > 0:
                 qualityWarnings.append(f"Missing Values : '{column}' is missing in {missingCount} out of {totalJobs} job postings")
 
+    #Salary anomaly checks
+    if "salary_min" in dataFrame.columns and "salary_max" in dataFrame.columns:
+        #convert to numeric and used coerce to set any errors to NaN as pandas skips NaN when comparing numbers
+        salaryMin = pd.to_numeric(dataFrame["salary_min"],errors="coerce")
+        salaryMax = pd.to_numeric(dataFrame["salary_max"],errors="coerce")
+
+        #check how many string values before and after converting to numeric, to determine how many salary values were strings that couldnt be converted to numbers
+        nonNumericMin = dataFrame["salary_min"].notna().sum() - salaryMin.notna().sum()
+        nonNumericMax = dataFrame["salary_max"].notna().sum() - salaryMax.notna().sum()
+        if nonNumericMin > 0:
+            qualityWarnings.append(f"Data type issue: {nonNumericMin} non-numeric values found in 'salary_min'")
+        if nonNumericMax > 0:
+            qualityWarnings.append(f"Data type issue: {nonNumericMax} non-numeric values found in 'salary_max'")
+
+        #check if any min salaries are greater than max salaries
+        invalidSalaryRange = (salaryMin > salaryMax).sum()
+        if invalidSalaryRange > 0:
+             qualityWarnings.append(f"Salary anomaly: {invalidSalaryRange} postings have salary_min greater than salary_max")
+
+    #Summary of quality issues
+    if len(qualityWarnings) == 0:
+        print(" Data quality checks passed with no issues")
+    else:
+        print(f"Data quality checks found {len(qualityWarnings)} issues:")
+        for warning in qualityWarnings:
+            print(f"- {warning}")
+
+    return qualityWarnings
+
+
 
 def main(streamlitKeywords=None, streamlitCount=None):
      
@@ -229,6 +259,10 @@ def main(streamlitKeywords=None, streamlitCount=None):
           print(f"Removed {originalJobCount-finalJobCount} duplicates")
 
     
+     #run data quality checks
+     qualityWarnings = DataQualityChecks(combinedDataFrame)
+
+
      #Save to Excel
      
      outputFilePath = Path(__file__).parents[2]/"data/raw/adzuna_raw.xlsx"
@@ -237,6 +271,8 @@ def main(streamlitKeywords=None, streamlitCount=None):
 
      with pd.ExcelWriter(outputFilePath, engine="openpyxl") as excelWriter:
         combinedDataFrame.to_excel(excelWriter, sheet_name="Jobs_Raw", index=False)
+
+     return qualityWarnings
 
 # Only run if called , not when this script imported into another file
 if __name__ == "__main__":
