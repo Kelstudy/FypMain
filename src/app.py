@@ -66,11 +66,19 @@ if runPipelineButton:
         #expanded as collapsed by default
         with st.status(f"Searching for '{jobTitleInput}'...",expanded=True) as status:  #as status allows referencing of the status to update once complete 
             st.write("Step 1: Fetching Live Job Posting Data...")
-            adzunaPull(jobTitleInput,recordLimit)
+            qualityWarnings = adzunaPull(jobTitleInput,recordLimit)
             st.write("Step 2: Matching jobs postings to skill sets")
-            assignSkills()
             #update status label
             status.update(label="Search Complete",state="complete")
+
+             # Display any warnings outside the status box, before the tabs
+        if qualityWarnings:
+            with st.expander(f"DATA QUALITY WARNINGS ({len(qualityWarnings)}):",expanded=True):
+                for warning in qualityWarnings:
+                    st.warning(warning)
+
+
+            
 
 #Display pipeline results
 processedFile = rootPath /"data"/"processed"/"job_skills_extracted.xlsx"
