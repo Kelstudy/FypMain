@@ -3,7 +3,7 @@
 #### Is fuzzy search wrong for this , is there a better method as currently does not always return a good adzuna to esco job title match
 # Can we use transformers?
 
-
+import re
 import pandas as pd
 from pathlib import Path
 from rapidfuzz import process,utils,fuzz
@@ -13,6 +13,24 @@ BaseDir = Path(__file__).parents[2]
 fileIn = BaseDir / "data" / "raw" / "adzuna_raw.xlsx"
 escoLibraryIn = BaseDir / "data" /"processed"/ "job_skills_library.parquet"
 fileOut = BaseDir / "data" / "processed" / "job_skills_extracted.xlsx"
+
+# Seniority words to strip before fuzzy matching 
+SeniorityLevel = [
+    "head of", "head","principal", "senior", "junior", "lead", "staff",
+    "associate", "assistant", "graduate", "entry level", "mid level"
+]
+
+
+def stripSeniority(title):
+    """Remove seniority prefixes from a job title before fuzzy matching.
+    The original title is preserved separately for display purposes."""
+    cleaned = title.lower()
+    for word in SeniorityLevel:
+        # Use word boundary matching to avoid partial replacements
+        cleaned = re.sub(rf"\b{word}\b", "", cleaned).strip()
+    # Remove any double spaces left behind
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    return cleaned
 
 def main():
     if not fileIn.exists() or not escoLibraryIn.exists():
