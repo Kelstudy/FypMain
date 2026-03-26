@@ -17,19 +17,16 @@ fileOut = BaseDir / "data" / "processed" / "job_skills_extracted.xlsx"
 # Seniority words to strip before fuzzy matching 
 SeniorityLevel = [
     "head of", "head","principal", "senior", "junior", "lead", "staff",
-    "associate", "assistant", "graduate", "entry level", "mid level"
+    "associate", "assistant", "graduate", "entry level", "mid level", "admin","administrator"
 ]
 
-
 def stripSeniority(title):
-    """Remove seniority prefixes from a job title before fuzzy matching.
-    The original title is preserved separately for display purposes."""
+    #Remove seniority titles from jobs before fuzzy matching
+    #The original title is kept separately for display 
     cleaned = title.lower()
     for word in SeniorityLevel:
-        # Use word boundary matching to avoid partial replacements
+        # using regex boundarys to avoid partial replacements such as vet = rivet
         cleaned = re.sub(rf"\b{word}\b", "", cleaned).strip()
-    # Remove any double spaces left behind
-    cleaned = re.sub(r"\s+", " ", cleaned).strip()
     return cleaned
 
 def main():
@@ -52,6 +49,7 @@ def main():
     for index , row in adzunaDF.iterrows():
         jobID = row.get("id","N/A")
         rawTitle = str(row["title"])
+        cleanedTitle = stripSeniority(rawTitle)
         roleGroup = str(row.get("search_keyword", "Unknown")).lower()
         description = str(row.get("description", ""))
         contractType = str(row.get("contract_type","Unknown"))
@@ -61,10 +59,24 @@ def main():
         latitude = float(row["latitude"])
         longitude = float(row["longitude"])
 
+        # Filter ESCO titles to only ones containing at least one word from the users search word
+        # This reduces false matches by limiting to relevant input occupation
+        keywordWords = set(roleGroup.lower().split())
+        filteredEscoTitles = [
+            title for title in escoTitles
+            if any(re.search(rf"\b{word}\b", title.lower()) for word in keywordWords) #need to use regex otherwise matches stuff like vet to riveter
+        ]
+
+        # fall back to full list if filter returns nothing
+        if len(filteredEscoTitles) == 0:
+            print(f"No ESCO titles matched keyword '{roleGroup}', using full list")
+            filteredEscoTitles = escoTitles
+
+
         # Use FuzzySearch to find closest ESCO job title compared to Adzuna job title
         fuzzyMatchResult = process.extractOne(
-            rawTitle,
-            escoTitles,
+            cleanedTitle,
+            filteredEscoTitles,
             scorer = fuzz.WRatio, # WRatio chosen as found best for general purpose
             processor = utils.default_process  # remove non-alphanumeric, trim whitespaces, convert to lower case
         )
