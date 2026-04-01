@@ -5,6 +5,8 @@ from pathlib import Path
 import sys
 import plotly.graph_objects as go
 
+
+
 #Setup Streamlit page config
 st.set_page_config(page_title="Job Skill Matcher", layout="wide") 
 
@@ -19,7 +21,8 @@ from src.data_pipeline.data_pull import main as adzunaPull
 from src.data_pipeline.ESCO_combine import buildTechSkillLibrary
 from src.data_pipeline.job_skill_assignment import main as assignSkills
 
-
+if "pipelineHasRun" not in st.session_state:
+    st.session_state.pipelineHasRun = False ###########
 
 # Function to check if the ESCO library exists and create it if not
 def ensureEscoLibraryExists():
@@ -89,6 +92,7 @@ if runPipelineButton:
             assignSkills()
             #update status label
             status.update(label="Search Complete",state="complete")
+            st.session_state.pipelineHasRun = True##############
             
              # Display any warnings outside the status box, before the tabs
         if qualityWarnings:
@@ -102,7 +106,7 @@ if runPipelineButton:
 #Display pipeline results
 processedFile = rootPath /"data"/"processed"/"job_skills_extracted.xlsx"
 
-if processedFile.exists():
+if processedFile.exists() and st.session_state.pipelineHasRun: ############
     try:
         jobData = pd.read_excel(processedFile)
     except:
