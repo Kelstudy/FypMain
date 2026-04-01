@@ -203,6 +203,7 @@ if processedFile.exists():
                 
             st.dataframe(
                 uniqueJobsDF,
+                hide_index=True,
                 column_config={
                     "posting_url": st.column_config.LinkColumn(
                         label="job_link",
