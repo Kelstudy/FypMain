@@ -74,7 +74,7 @@ if runPipelineButton:
             
              # Display any warnings outside the status box, before the tabs
         if qualityWarnings:
-            with st.expander(f"DATA QUALITY WARNINGS ({len(qualityWarnings)}):",expanded=True):
+            with st.expander(f"DATA QUALITY WARNINGS (click to expand) ({len(qualityWarnings)}):",expanded=False):
                 for warning in qualityWarnings:
                     st.warning(warning)
 
