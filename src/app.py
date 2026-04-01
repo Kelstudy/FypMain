@@ -3,6 +3,7 @@ import pandas as pd
 import pydeck as pdk
 from pathlib import Path
 import sys
+import plotly.graph_objects as go
 
 #Setup Streamlit page config
 st.set_page_config(page_title="Job Skill Matcher", layout="wide") 
@@ -48,12 +49,11 @@ with st.sidebar:
 
     #Clear data when "clear" button clicked
     if resetDataButton:
-        #define location of files to delete
+        #define location of file to delete
         processedFile = rootPath / "data" / "processed" / "job_skills_extracted.xlsx"
         rawFile = rootPath / "data" / "raw" / "adzuna_raw.xlsx"
-        #if files exist, then unlink/delete them
+        #if files exist, then unlink/delete it
         if processedFile.exists(): processedFile.unlink()
-        if rawFile.exists(): rawFile.unlink()
         #rerun streamlit appliction from scratch
         st.rerun()
 
@@ -147,7 +147,6 @@ if processedFile.exists():
                         initial_view_state=viewState,
                         layers=[JobPointsLayer],
                         tooltip={"text": "Title: {adzuna_title}\n"
-                        "ESCO Match: {esco_matched_title}\n"
                         "Min Salary: £{salary_min}\n"
                         "Max Salary: £{salary_max}\n"
                         "Contract: {contract_type}\n"
@@ -169,7 +168,7 @@ if processedFile.exists():
         with tabList:
             if 'job_id' in jobData.columns:
                 uniqueJobsDF = jobData.drop_duplicates(subset=['job_id'])
-                st.dataframe(uniqueJobsDF)
+                
 
                 st.header("Download:")
                 st.download_button(
@@ -177,8 +176,20 @@ if processedFile.exists():
                     data=uniqueJobsDF.to_csv(index=False),
                     file_name="UniqueJobResults.csv",
                     mime="text/csv", # mime tells what the file type is
-                    type="primary"
+                    type="primary" #title
                 )
+                
+            st.dataframe(
+                uniqueJobsDF,
+                column_config={
+                    "posting_url": st.column_config.LinkColumn(
+                        label="Job Link",
+                        display_text="View Posting"
+                    )
+                },
+                column_order=["posting_url", "adzuna_title", "esco_matched_title", "confidence score", "contract_type", "salary_min", "salary_max", "description", "latitude", "longitude","job_id"]
+
+            )
 
         #create skill tab contents
         
@@ -201,14 +212,71 @@ if processedFile.exists():
            
 
             #top 5 skills as metric cards
-            st.markdown("#### Top 5 Most Common Skills")
+            st.markdown("#### Top 5 Most Common Skills (Work in Progress)")
             skillCounts = jobData["skill"].value_counts()
             top5Skills = skillCounts.head(5)
             for i,(skill,count) in enumerate(top5Skills.items()):
                 st.markdown(f"{skill} - **{count}** jobs")
+
+            # Salary distribution histogram
+            st.markdown("#### Salary Distribution")
+            #get only unique job postings based on adzuna posting ID
+            salaryDF = jobData.drop_duplicates(subset=["job_id"])[["salary_min","salary_max"]].dropna()
+
+            if salaryDF.empty:
+                st.warning("No salary data available for this search")
+            else:
+                salaryFig = go.Figure()
+
+                salaryFig.add_trace(go.Histogram(
+                    x = salaryDF["salary_min"],
+                    name = "Salary Min",
+                    marker_color = "#620b0b"
+                ))
+                salaryFig.add_trace(go.Histogram(
+                    x=salaryDF["salary_max"],
+                    name="Salary Max",
+                    marker_color="#378ADD"
+                ))
+
+                salaryFig.update_layout(
+                xaxis_title="Salary (£)",
+                yaxis_title="Number of Jobs",
+                legend_title="Salary Type"
+            )
+
+            st.plotly_chart(salaryFig)
+            st.caption(f"Based on {len(salaryDF)} jobs with salary data")
+
+            # Contract type Barchart
+            st.markdown("#### Contract Type Breakdown")
+            contractDF = jobData.drop_duplicates(subset=["job_id"])["contract_type"]
+            if contractDF.empty:
+                st.warning("No contract type data found for this search")
+            else:
+                contractCounts = contractDF.value_counts(dropna=False).reset_index() #reset index to convert to standard DF with named columns
+                contractCounts.columns = ["contract_type","count"]
+                contractCounts["contract_type"] = contractCounts["contract_type"].fillna("Not Specified")
+                contractFig = go.Figure()
+
+                contractFig.add_trace(go.Bar(
+                    x = contractCounts["contract_type"],
+                    y = contractCounts["count"],
+                    marker_color=["#3A9C17", "#620b0b", "#0C1CC9"]              
+                ))
+                
+                contractFig.update_layout(
+                    xaxis_title = "Contract Type",
+                    yaxis_title = "Number of jobs" 
+                )
+
+                st.plotly_chart(contractFig)
+                st.caption(f"Based on {contractDF.count()} jobs with contract data")
+
+
 else:
     st.divider()
-    st.info("Welcome! To begin, enter a job role in the sidebar and click **Run Full Pipeline**.")
+    st.info("Welcome! To begin, expand the sidebar at the top left, enter a job role, and click **Run Full Pipeline**.")
     st.markdown("""
     ### How to use this tool:
     1. **Enter a Keyword**: Type a job title into the box on the left.
