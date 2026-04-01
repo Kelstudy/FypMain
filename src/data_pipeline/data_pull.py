@@ -257,8 +257,11 @@ def main(streamlitKeywords=None, streamlitCount=None):
           combinedDataFrame = combinedDataFrame.drop_duplicates(subset=["id"],keep="first")
           finalJobCount = len(combinedDataFrame)
           print(f"Removed {originalJobCount-finalJobCount} duplicates")
-
     
+     #Trim to exactly the requested record limit
+     totalRequestedCount = sum(targetCountList)
+     combinedDataFrame = combinedDataFrame.head(totalRequestedCount)
+        
      #run data quality checks
      qualityWarnings = DataQualityChecks(combinedDataFrame)
 
