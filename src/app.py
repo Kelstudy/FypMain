@@ -49,7 +49,7 @@ st.markdown("""
             font-size: 16px;
             padding: 10px 20px;
             border: 1px solid #378ADD;
-            border-radius: 6px;
+            border-radius: 60px;
             margin-right: 4px;
             background-color: #378ADD;
             color: white;
