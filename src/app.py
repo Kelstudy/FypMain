@@ -19,6 +19,8 @@ from src.data_pipeline.data_pull import main as adzunaPull
 from src.data_pipeline.ESCO_combine import buildTechSkillLibrary
 from src.data_pipeline.job_skill_assignment import main as assignSkills
 
+
+
 # Function to check if the ESCO library exists and create it if not
 def ensureEscoLibraryExists():
     escoFile = rootPath / "data" / "processed" / "job_skills_library.parquet"
@@ -38,6 +40,22 @@ def formatSalary(value):
 
 #Streamlit header
 st.title("SkillSignal UK Job Posting Dashboard")
+
+#use css to create the border around the tabs to make easier to see
+#.stTabs is streamlits own class for tabs and data-baseweb="tab" targets each tab button individually
+st.markdown("""
+    <style>
+        .stTabs [data-baseweb="tab"] {
+            font-size: 16px;
+            padding: 10px 20px;
+            border: 1px solid #378ADD;
+            border-radius: 6px;
+            margin-right: 4px;
+            background-color: #378ADD;
+            color: white;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 #Streamlit sidebar controls
 with st.sidebar:
