@@ -178,12 +178,16 @@ if processedFile.exists():
                     mime="text/csv", # mime tells what the file type is
                     type="primary" #title
                 )
+
+                #add formatting to salaries
+                uniqueJobsDF["salary_min"] = uniqueJobsDF["salary_min"].apply(lambda x: f"£{x:,.0f}" if pd.notnull(x) else "N/A")
+                uniqueJobsDF["salary_max"] = uniqueJobsDF["salary_max"].apply(lambda x: f"£{x:,.0f}" if pd.notnull(x) else "N/A")
                 
             st.dataframe(
                 uniqueJobsDF,
                 column_config={
                     "posting_url": st.column_config.LinkColumn(
-                        label="Job Link",
+                        label="job_link",
                         display_text="View Posting"
                     )
                 },
@@ -267,7 +271,7 @@ if processedFile.exists():
                 
                 contractFig.update_layout(
                     xaxis_title = "Contract Type",
-                    yaxis_title = "Number of jobs" 
+                    yaxis_title = "Number of Jobs" 
                 )
 
                 st.plotly_chart(contractFig)
