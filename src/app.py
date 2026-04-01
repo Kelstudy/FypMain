@@ -279,7 +279,7 @@ if processedFile.exists():
             else:
                 contractCounts = contractDF.value_counts(dropna=False).reset_index() #reset index to convert to standard DF with named columns
                 contractCounts.columns = ["contract_type","count"]
-                contractCounts["contract_type"] = contractCounts["contract_type"].fillna("Not Specified")
+                contractCounts["contract_type"] = contractCounts["contract_type"].fillna("not specified")
                 contractFig = go.Figure()
 
                 contractFig.add_trace(go.Bar(
