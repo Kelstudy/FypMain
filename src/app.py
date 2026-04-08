@@ -21,8 +21,7 @@ from src.data_pipeline.data_pull import main as adzunaPull
 from src.data_pipeline.ESCO_combine import buildTechSkillLibrary
 from src.data_pipeline.job_skill_assignment import main as assignSkills
 
-if "pipelineHasRun" not in st.session_state:
-    st.session_state.pipelineHasRun = False ###########
+
 
 # Function to check if the ESCO library exists and create it if not
 def ensureEscoLibraryExists():
@@ -92,7 +91,6 @@ if runPipelineButton:
             assignSkills()
             #update status label
             status.update(label="Search Complete",state="complete")
-            st.session_state.pipelineHasRun = True##############
             
              # Display any warnings outside the status box, before the tabs
         if qualityWarnings:
@@ -106,7 +104,7 @@ if runPipelineButton:
 #Display pipeline results
 processedFile = rootPath /"data"/"processed"/"job_skills_extracted.xlsx"
 
-if processedFile.exists() and st.session_state.pipelineHasRun: ############
+if processedFile.exists():
     try:
         jobData = pd.read_excel(processedFile)
     except:
@@ -122,7 +120,7 @@ if processedFile.exists() and st.session_state.pipelineHasRun: ############
     
     else:
         #create 4 tabs, 1 for each section
-        tabMap,tabList,tabSkills,tabEDA = st.tabs(["Map","Job List", "Skill Breakdown","Exploratory Data Analysis"])
+        tabMap,tabList,tabSkills,tabEDA,tabSummaryStats = st.tabs(["Map","Job List", "Skill Breakdown","Exploratory Data Analysis","Summary Statistics"])
 
         #create map tab contents
         with tabMap:
@@ -221,6 +219,7 @@ if processedFile.exists() and st.session_state.pipelineHasRun: ############
         #create skill tab contents
         
         with tabSkills:
+            st.warning( "Note: Skills are inferred by matching job titles to the ESCO taxonomy and may not perfectly reflect every posting. Short or ambiguous job titles may produce imprecise matches. This tool is intended to show general skill trends and you should always cross reference with individual job postings for role-specific requirements.")
             uniquePairs = jobData[["adzuna_title","esco_matched_title"]].drop_duplicates()
             for index,row in uniquePairs.iterrows():
                 with st.expander(f"{row["adzuna_title"]} -> skills inferred from {row["esco_matched_title"]} ESCO skill set"):
@@ -300,7 +299,41 @@ if processedFile.exists() and st.session_state.pipelineHasRun: ############
                 st.plotly_chart(contractFig)
                 st.caption(f"Based on {contractDF.count()} jobs with contract data")
 
+        with tabSummaryStats:
+            st.subheader("Summary Statistics")
+            #clean data frame to only show unique job postings
+            uniqueJobsStatDF  = jobData.drop_duplicates(subset=['job_id'])
 
+            #get summary stats
+            totalPostings = uniqueJobsStatDF["job_id"].nunique()
+            
+            postingsWithSalary = len(uniqueJobsDF[uniqueJobsDF["salary_min"].notna() & uniqueJobsDF["salary_max"].notna()])
+
+            meanSalaryMin = uniqueJobsStatDF["salary_min"].mean()
+            meanSalaryMax = uniqueJobsStatDF["salary_max"].mean()
+
+            contractMode = uniqueJobsStatDF["contract_type"].dropna().mode()
+            
+            contractCounts = uniqueJobsDF["contract_type"].dropna().value_counts()
+            mostCommonContract = contractCounts.index[0] if not contractCounts.empty else "N/A"
+
+            uniqueEscoCount = uniqueJobsStatDF["esco_matched_title"].nunique()
+
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("Total Postings Retrieved", totalPostings)
+                st.metric("Postings With Salary Data", postingsWithSalary)
+
+            with col2:
+                st.metric("Mean Minimum Salary", f"£{meanSalaryMin:,.0f}" if pd.notna(meanSalaryMin) else "N/A")
+                st.metric("Mean Maximum Salary", f"£{meanSalaryMax:,.0f}" if pd.notna(meanSalaryMax) else "N/A")
+
+            with col3:
+                st.metric("Most Common Contract Type", mostCommonContract)
+                st.metric("Unique ESCO Occupations Matched", uniqueEscoCount)
+
+
+            
 else:
     st.divider()
     st.info("Welcome! To begin, expand the sidebar at the top left, enter a job role, and click **Run Full Pipeline**.")
