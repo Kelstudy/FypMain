@@ -120,7 +120,49 @@ if processedFile.exists():
     
     else:
         #create 4 tabs, 1 for each section
-        tabMap,tabList,tabSkills,tabEDA,tabSummaryStats = st.tabs(["Map","Job List", "Skill Breakdown","Exploratory Data Analysis","Summary Statistics"])
+        tabSummaryStats,tabMap,tabList,tabSkills,tabEDA = st.tabs(["Summary Statistics","Map", "Job List","Skill Breakdown","Exploratory Data Analysis"])
+
+        with tabSummaryStats:
+            st.subheader("Summary Statistics")
+            uniqueJobsDF = jobData.drop_duplicates(subset=['job_id'])
+            #clean data frame to only show unique job postings
+            uniqueJobsStatDF  = jobData.drop_duplicates(subset=['job_id'])
+
+            #get summary stats
+            totalPostings = uniqueJobsStatDF["job_id"].nunique()
+            
+            postingsWithSalary = len(uniqueJobsDF[uniqueJobsDF["salary_min"].notna() & uniqueJobsDF["salary_max"].notna()])
+
+            meanSalaryMin = uniqueJobsStatDF["salary_min"].mean()
+            meanSalaryMax = uniqueJobsStatDF["salary_max"].mean()
+
+            contractMode = uniqueJobsStatDF["contract_type"].dropna().mode()
+            
+            contractCounts = uniqueJobsDF["contract_type"].dropna().value_counts()
+            mostCommonContract = contractCounts.index[0] if not contractCounts.empty else "N/A"
+
+            uniqueEscoCount = uniqueJobsStatDF["esco_matched_title"].nunique()
+
+            jobsWithGeoData = len(uniqueJobsDF.dropna(subset=["latitude", "longitude"]))
+
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric("Total Postings Retrieved", totalPostings)
+                st.metric("Postings With Salary Data", postingsWithSalary)
+
+            with col2:
+                st.metric("Average Minimum Salary", f"£{meanSalaryMin:,.0f}" if pd.notna(meanSalaryMin) else "N/A")
+                st.metric("Average Maximum Salary", f"£{meanSalaryMax:,.0f}" if pd.notna(meanSalaryMax) else "N/A")
+
+            with col3:
+                st.metric("Most Common Contract Type", mostCommonContract)
+                st.metric("Unique ESCO Occupations Matched", uniqueEscoCount)
+
+            with col4:
+                st.metric("Jobs With Geolocation Data", jobsWithGeoData)
+
+
+
 
         #create map tab contents
         with tabMap:
@@ -187,8 +229,7 @@ if processedFile.exists():
         #create job list tab content
         with tabList:
             if 'job_id' in jobData.columns:
-                uniqueJobsDF = jobData.drop_duplicates(subset=['job_id'])
-                
+                               
 
                 st.header("Download:")
                 st.download_button(
@@ -299,40 +340,7 @@ if processedFile.exists():
                 st.plotly_chart(contractFig)
                 st.caption(f"Based on {contractDF.count()} jobs with contract data")
 
-        with tabSummaryStats:
-            st.subheader("Summary Statistics")
-            #clean data frame to only show unique job postings
-            uniqueJobsStatDF  = jobData.drop_duplicates(subset=['job_id'])
-
-            #get summary stats
-            totalPostings = uniqueJobsStatDF["job_id"].nunique()
-            
-            postingsWithSalary = len(uniqueJobsDF[uniqueJobsDF["salary_min"].notna() & uniqueJobsDF["salary_max"].notna()])
-
-            meanSalaryMin = uniqueJobsStatDF["salary_min"].mean()
-            meanSalaryMax = uniqueJobsStatDF["salary_max"].mean()
-
-            contractMode = uniqueJobsStatDF["contract_type"].dropna().mode()
-            
-            contractCounts = uniqueJobsDF["contract_type"].dropna().value_counts()
-            mostCommonContract = contractCounts.index[0] if not contractCounts.empty else "N/A"
-
-            uniqueEscoCount = uniqueJobsStatDF["esco_matched_title"].nunique()
-
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                st.metric("Total Postings Retrieved", totalPostings)
-                st.metric("Postings With Salary Data", postingsWithSalary)
-
-            with col2:
-                st.metric("Mean Minimum Salary", f"£{meanSalaryMin:,.0f}" if pd.notna(meanSalaryMin) else "N/A")
-                st.metric("Mean Maximum Salary", f"£{meanSalaryMax:,.0f}" if pd.notna(meanSalaryMax) else "N/A")
-
-            with col3:
-                st.metric("Most Common Contract Type", mostCommonContract)
-                st.metric("Unique ESCO Occupations Matched", uniqueEscoCount)
-
-
+        
             
 else:
     st.divider()
