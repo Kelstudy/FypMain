@@ -119,7 +119,7 @@ if processedFile.exists():
         st.warning("The search returned results but they couldn't be matched to any skills. Try a more common job title")
     
     else:
-        #create 4 tabs, 1 for each section
+        #create 5 tabs, 1 for each section
         tabSummaryStats,tabMap,tabList,tabSkills,tabEDA = st.tabs(["Summary Statistics","Map", "Job List","Skill Breakdown","Exploratory Data Analysis"])
 
         with tabSummaryStats:
