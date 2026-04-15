@@ -8,13 +8,13 @@ Module: 6DATA007W – Final Year Project
 
 ## Project Overview
 
-This work in progress project analyses live UK job posting data to identify trends in roles, skills, and employment data.
+This project analyses live UK job posting data to identify trends in roles, skills, and employment data.
 The core objective is to build a reproducible data pipeline that collects real job postings, infers required skills using a standardised taxonomy, and prepares the data for analysis and dashboard visualisation.
 
 Rather than relying solely on job description text, which is often truncated or inconsistent, the project maps job titles to standardised occupations and infers skills indirectly, currently by using the ESCO framework.
 This improves reliability, scalability, and defensibility.
 
-The final outcome will be an interactive dashboard allowing users to explore trends across roles, skill demand, locations, and salaries within the UK job market.
+The final outcome is an interactive dashboard allowing users to explore trends across roles, skill demand, locations, and salaries within the UK job market.
 
 --- 
 
@@ -35,7 +35,7 @@ Fuzzy matching between Adzuna job titles and ESCO occupations sometimes introduc
 - Skill inference using the ESCO job-skill taxonomy
 - Fuzzy job title matching to handle non standard employer titles
 - Clear separation of raw, intermediate, and processed data
-- Designed for future integration with a Streamlit dashboard
+- Integration with a Streamlit dashboard
 
 ---
 
@@ -59,6 +59,7 @@ Fuzzy matching between Adzuna job titles and ESCO occupations sometimes introduc
 | src/ | Folder to store all source code |
 | data_collection/ | Folder to store data collection/ sourcing scripts |
 | data_pull.py | Scripts for pulling job posting data via Adzuna API |
+| app.py | Script for Streamlit dashboard creation and full pipeline run |
 | skills_extraction/ | Folder to store data skill extraction scripts |
 | ESCO_combine.py | Script for building ESCO job and skill datasets (job_skills_library.parquet) |
 | job_skill_assignment.py | Script for assigning skills to input jobs , and generating the job_skills_extracted.xlsx file |
@@ -98,25 +99,35 @@ Script: job_skill_assignment.py
 
 ---
 
+### Dashboard
+Script: app.py
+
+- Sets up the Streamlit dashboard
+- Allows input of job titles and record counts
+- Utilises all previous scripts to run the full pipeline with 1 button
+
+---
+
 ## Technologies Used
 
-- Python
-  - pandas
-  - numpy
-  - requests
-  - rapidfuzz
-  - pyarrow
-  - python-dotenv
-  - openpyxl
-- Data formats
-  - Excel (.xlsx)
-  - Parquet (.parquet)
-- Planned visualisation
-  - Streamlit
-- Version control
-  - Git and GitHub
+- pandas
+- numpy
+- requests
+- python-dotenv
+- openpyxl
+- rapidfuzz
+- streamlit==1.43.0   
+- GitPython
+- pathlib
+- plotly
+- pydeck
+- pyarrow
 
-## Setup Instructions
+
+## Setup Instructions - for web app use
+ 1. Go to https://skillsignal.streamlit.app/ and follow on screen instructions.
+
+## Setup Instructions - for code download and local use
 
 ### Clone the repository
 1. git clone https://github.com/Kelstudy/FypMain
@@ -130,7 +141,7 @@ pip install -r requirements.txt
 1. Edit api_template.env to include your API credentials for Adzuna
 
 
-## Execution Order
+### Execution Order
 Run scripts in the following order:
 
 1. src/data_collection/data_pull.py
@@ -140,14 +151,6 @@ Run scripts in the following order:
 Each script is rerunnable and designed to overwrite outdated outputs.
 
 
-
-## Current Status
-
-- Live data pipeline implemented
-- ESCO skill inference working
-- Structured outputs generated
-- Dashboard development pending
-- Final analysis and report pending
 
 ---
 
